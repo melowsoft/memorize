@@ -13,6 +13,7 @@ struct EmojiMemoryGameView: View {
     var body: some View {
         VStack {
             gameBody
+            deckBody
             shuffle
         }
         .padding()
@@ -44,7 +45,19 @@ struct EmojiMemoryGameView: View {
             }
             
         }
-        .onAppear {
+        
+        .foregroundColor(CardConstants.color)
+    }
+    
+    var deckBody: some View {
+        ZStack {
+            ForEach(game.cards.filter(isUndealt)) { card in
+                CardView(card: card)
+            }
+        }
+        .frame(width: CardConstants.undealthWidth, height: CardConstants.undealtHeight)
+        .foregroundColor(CardConstants.color)
+        .onTapGesture {
             // "deal" cards
             withAnimation {
                 for card in game.cards {
@@ -52,16 +65,24 @@ struct EmojiMemoryGameView: View {
                 }
             }
         }
-        
-            .foregroundColor(.red)
     }
+    
     var shuffle: some View {
         Button("Shuffle"){
             withAnimation {
                 game.shuffle()
             }
         }
-
+        
+    }
+    
+    private struct CardConstants {
+        static let color = Color.red
+        static let aspectRatio: CGFloat = 2/3
+        static let dealDuration: Double = 0.5
+        static let totalDealDuration: Double = 2
+        static let undealtHeight: CGFloat = 90
+        static let undealthWidth = undealtHeight * aspectRatio
     }
     
 }
@@ -69,7 +90,7 @@ struct EmojiMemoryGameView: View {
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         let game = EmojiMemoryGame()
-       return EmojiMemoryGameView(game: game)
+        return EmojiMemoryGameView(game: game)
             .preferredColorScheme(.dark)
     }
 }
@@ -80,10 +101,10 @@ struct CardView: View {
     var body: some View {
         GeometryReader { geometry in
             ZStack {
-
-                    Pie(startAngle: Angle(degrees: 0 - 90), endAngle: Angle(degrees: 110 - 90))
-                        .padding(5).opacity(0.5)
-                    Text(card.content)
+                
+                Pie(startAngle: Angle(degrees: 0 - 90), endAngle: Angle(degrees: 110 - 90))
+                    .padding(5).opacity(0.5)
+                Text(card.content)
                     .rotationEffect(Angle(degrees: card.isMatched ? 360 : 0))
                     .animation(Animation.linear(duration: 1).repeatForever(autoreverses: false))
                     .font(Font.system(size: DrawingConstant.fontSize))
