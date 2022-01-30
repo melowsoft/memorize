@@ -38,7 +38,7 @@ struct EmojiMemoryGameView: View {
                     .padding(4)
                     .transition(AnyTransition.asymmetric(insertion: .scale, removal: .opacity).animation(.easeInOut(duration: 3)))
                     .onTapGesture {
-                        withAnimation {
+                        withAnimation(.easeInOut(duration: 5)) {
                             game.choose(card)
                         }
                     }
